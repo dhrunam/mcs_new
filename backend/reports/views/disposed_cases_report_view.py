@@ -41,4 +41,49 @@ class DisposedCaseReportList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         
-        return super().get_queryset()   
+        queryset = self.queryset
+
+        report_month = self.request.query_params.get('report_month')
+        report_year = self.request.query_params.get('report_year')
+        # creator__username =  self.request.query_params.get('creator__username')
+        type_civil_criminal = self.request.query_params.get('civil_criminal')
+        # organization =  self.request.query_params.get('organization')
+        profile = getattr(self.request.user, "user_profile", None)
+        org_id = profile.organization_id if profile and profile.organization_id else None
+        if report_month:
+            queryset =queryset.filter( report_month=report_month)
+        if report_year:
+            queryset =queryset.filter( report_year=report_year)
+        if type_civil_criminal:
+            queryset =queryset.filter( civil_criminal=type_civil_criminal)
+        if org_id:
+            queryset =queryset.filter( organization_id=org_id)  
+        
+        return queryset
+    
+
+class DisposedCaseReportListGetForHCS(generics.ListAPIView):
+    queryset = report_models.DisposedCasesReport.objects.all().order_by('-id')
+    serializer_class = report_serializer.DisposedCasesReportSerializer
+
+    def get_queryset(self):
+        
+        queryset = self.queryset
+
+        report_month = self.request.query_params.get('report_month')
+        report_year = self.request.query_params.get('report_year')
+        # creator__username =  self.request.query_params.get('creator__username')
+        type_civil_criminal = self.request.query_params.get('civil_criminal')
+        org_id =  self.request.query_params.get('organization')
+
+        if report_month:
+            queryset =queryset.filter( report_month=report_month)
+        if report_year:
+            queryset =queryset.filter( report_year=report_year)
+        if type_civil_criminal:
+            queryset =queryset.filter( civil_criminal=type_civil_criminal)
+        if org_id:
+            queryset =queryset.filter( organization_id=org_id)  
+        
+        return queryset
+    

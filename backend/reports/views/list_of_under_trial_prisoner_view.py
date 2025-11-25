@@ -37,4 +37,51 @@ class ListOfUndertrialPrisonersList(generics.ListCreateAPIView):
         except Exception as e:
             return response.Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
- 
+    def get_queryset(self):
+        
+        queryset = self.queryset
+
+        report_month = self.request.query_params.get('report_month')
+        report_year = self.request.query_params.get('report_year')
+        # creator__username =  self.request.query_params.get('creator__username')
+        type_civil_criminal = self.request.query_params.get('civil_criminal')
+        # organization =  self.request.query_params.get('organization')
+        profile = getattr(self.request.user, "user_profile", None)
+        org_id = profile.organization_id if profile and profile.organization_id else None
+        if report_month:
+            queryset =queryset.filter( report_month=report_month)
+        if report_year:
+            queryset =queryset.filter( report_year=report_year)
+        if type_civil_criminal:
+            queryset =queryset.filter( civil_criminal=type_civil_criminal)
+        if org_id:
+            queryset =queryset.filter( organization_id=org_id)  
+        
+        return queryset
+    
+
+class ListOfUndertrialPrisonersListGetForHCS(generics.ListAPIView):
+    queryset = report_models.ListOfUndertrialPrisoners.objects.all().order_by('-id')
+    serializer_class = report_serializer.ListOfUndertrialPrisonersSerializer
+
+    def get_queryset(self):
+        
+        queryset = self.queryset
+
+        report_month = self.request.query_params.get('report_month')
+        report_year = self.request.query_params.get('report_year')
+        # creator__username =  self.request.query_params.get('creator__username')
+        type_civil_criminal = self.request.query_params.get('civil_criminal')
+        org_id =  self.request.query_params.get('organization')
+
+        if report_month:
+            queryset =queryset.filter( report_month=report_month)
+        if report_year:
+            queryset =queryset.filter( report_year=report_year)
+        if type_civil_criminal:
+            queryset =queryset.filter( civil_criminal=type_civil_criminal)
+        if org_id:
+            queryset =queryset.filter( organization_id=org_id)  
+        
+        return queryset
+    
