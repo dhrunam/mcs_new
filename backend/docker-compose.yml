@@ -33,19 +33,39 @@ version: '3.8'
 # No database container. Django will connect to the host's database.
 
 
+# services:
+#   web:
+#     build:
+#       context: .
+#       dockerfile: Dockerfile
+#     platform: linux/amd64
+#     container_name: mcs_new_web
+#     command: >
+#       sh -c "
+#       python manage.py collectstatic --noinput &&
+#       gunicorn backend.wsgi:application --bind 0.0.0.0:8001
+#       "
+#     image: mcs_new_web:amd64
+#     ports:
+#       - "8001:8001"
+#     volumes:
+#       - static_volume:/app/staticfiles
+
+# volumes:
+#   static_volume:
+
+
 services:
   web:
     build:
       context: .
       dockerfile: Dockerfile
-    platform: linux/amd64
     container_name: mcs_new_web
     command: >
       sh -c "
       python manage.py collectstatic --noinput &&
       gunicorn backend.wsgi:application --bind 0.0.0.0:8001
       "
-    image: mcs_new_web:amd64
     ports:
       - "8001:8001"
     volumes:
@@ -53,3 +73,4 @@ services:
 
 volumes:
   static_volume:
+
