@@ -1,5 +1,38 @@
 version: '3.8'
 
+# services:
+#   web:
+#     build:
+#       context: .
+#       dockerfile: Dockerfile
+#     platform: linux/amd64
+#     container_name: mcs_new_web
+#     command: >
+#       sh -c "
+#       python manage.py collectstatic --noinput &&
+#       gunicorn backend.wsgi:application --bind 0.0.0.0:8001
+#       "
+#     image: mcs_new_web:amd64
+#     volumes:
+#       - ./backend:/app
+#       - static_volume:/app/staticfiles
+#     # environment:
+#     #   - DJANGO_DEBUG=True
+#     #   - DJANGO_ALLOWED_HOSTS=yourdomain.com
+#     #   - DB_NAME=mact_claim
+#     #   - DB_USER=postgres
+#     #   - DB_PASSWORD=postgres
+#     #   - DB_HOST=localhost
+#     #   - DB_PORT=5432
+#     ports:
+#       - "8001:8001"
+    
+# volumes:
+#   static_volume:
+
+# No database container. Django will connect to the host's database.
+
+
 services:
   web:
     build:
@@ -13,21 +46,10 @@ services:
       gunicorn backend.wsgi:application --bind 0.0.0.0:8001
       "
     image: mcs_new_web:amd64
-    volumes:
-      - ./backend:/app
-      - static_volume:/app/staticfiles
-    # environment:
-    #   - DJANGO_DEBUG=True
-    #   - DJANGO_ALLOWED_HOSTS=yourdomain.com
-    #   - DB_NAME=mact_claim
-    #   - DB_USER=postgres
-    #   - DB_PASSWORD=postgres
-    #   - DB_HOST=localhost
-    #   - DB_PORT=5432
     ports:
       - "8001:8001"
-    
+    volumes:
+      - static_volume:/app/staticfiles
+
 volumes:
   static_volume:
-
-# No database container. Django will connect to the host's database.
