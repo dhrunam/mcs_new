@@ -1,6 +1,6 @@
 from django.db import models
-from auditlog.registry import auditlog
 from auditlog.models import AuditlogHistoryField
+from auditlog.registry import auditlog
 from accounts import models as auth_models
 
 from django.db import models
@@ -12,12 +12,14 @@ class OrganizationDatabase(models.Model):
     db_password = models.CharField(max_length=100)  # Database password
     db_host = models.CharField(max_length=100, default='localhost')  # Host
     db_port = models.CharField(max_length=10, default='5432')  # Port
-
+    history = AuditlogHistoryField()
     def __str__(self) -> str:
         return f"Organization {self.organisation.organization_name}"
 
+auditlog.register(OrganizationDatabase)
 
 class CaseType(models.Model):
+    organisation= models.ForeignKey(auth_models.Organization, null=True, on_delete=models.SET_NULL, related_name='organisation_casetype') # Organization ID
     desc_case = models.CharField(max_length=600)
     type_main_mis = models.CharField(max_length=15, null=True)
     type_civil_criminal = models.CharField(max_length=15, null=True)
@@ -27,10 +29,11 @@ class CaseType(models.Model):
     family_court = models.BooleanField(default=False)
     fast_track_court = models.BooleanField(default=False)
     juvenile_justice_court = models.BooleanField(default=False)
-
+    history = AuditlogHistoryField()
 
     def __str__(self) -> str:
         return self.desc_case
+auditlog.register(CaseType)
 
 class OldestCase(models.Model):
     case_type = models.ForeignKey(CaseType,null=True,on_delete=models.SET_NULL, related_name="oldest_case")
@@ -47,6 +50,9 @@ class OldestCase(models.Model):
     updated_by = models.ForeignKey('auth.User', related_name='oldest_case_updator', null=True, on_delete=models.SET_NULL)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    history = AuditlogHistoryField()
+
+auditlog.register(OldestCase)
 
 class Report(models.Model):
     id = models.BigAutoField(primary_key=True)
@@ -78,7 +84,7 @@ class Report(models.Model):
         unique_together =['case_type','report_year','report_month','organization']
 
     history = AuditlogHistoryField()
-
+auditlog.register(Report)
 
 class DisposedCasesReport(models.Model):
     case_no =  models.CharField(max_length=50, null=True)
@@ -96,7 +102,7 @@ class DisposedCasesReport(models.Model):
     organization= models.ForeignKey(auth_models.Organization, on_delete= models.SET_NULL, null=True, related_name='disposed_caseses_reports')
     created_by = models.ForeignKey('auth.User', related_name='disposed_caseses_reports_creator', on_delete=models.CASCADE)
     updated_by = models.ForeignKey('auth.User', related_name='disposed_caseses_reports_updator', null=True, on_delete=models.SET_NULL)
-
+    history = AuditlogHistoryField()
     class Meta:
         constraints = [
             models.UniqueConstraint(
@@ -104,6 +110,7 @@ class DisposedCasesReport(models.Model):
                 name='unique_disposed_case_org_year_month'
             )
         ]
+auditlog.register(DisposedCasesReport)
 
 class PendingCasesReport(models.Model):
 
@@ -121,7 +128,7 @@ class PendingCasesReport(models.Model):
     organization= models.ForeignKey(auth_models.Organization, on_delete= models.SET_NULL, null=True, related_name='pending_caseses_reports')
     created_by = models.ForeignKey('auth.User', related_name='pending_caseses_reports_creator', on_delete=models.CASCADE)
     updated_by = models.ForeignKey('auth.User', related_name='pending_caseses_reports_updator', null=True, on_delete=models.SET_NULL)
-
+    history = AuditlogHistoryField()
     class Meta:
         constraints = [
             models.UniqueConstraint(
@@ -129,6 +136,7 @@ class PendingCasesReport(models.Model):
                 name='unique_pending_case_org_year_month'
             )
         ]
+auditlog.register(PendingCasesReport)
 
 class StatementOfCourtFeesFines(models.Model):
     report_year = models.IntegerField()
@@ -142,6 +150,7 @@ class StatementOfCourtFeesFines(models.Model):
     updated_by = models.ForeignKey('auth.User', related_name='state_ment_of_court_fees_fines_updator', null=True, on_delete=models.SET_NULL)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    history = AuditlogHistoryField()
 
     class Meta:
         constraints = [
@@ -150,6 +159,7 @@ class StatementOfCourtFeesFines(models.Model):
                 name='unique_court_fees_org_year_month'
             )
         ]
+auditlog.register(StatementOfCourtFeesFines)
 
 class ListOfUndertrialPrisoners(models.Model):
     date_of_inst = models.DateField(null=True)
@@ -162,7 +172,7 @@ class ListOfUndertrialPrisoners(models.Model):
     report_month=models.CharField(max_length=100)
     organization= models.ForeignKey(auth_models.Organization, on_delete= models.SET_NULL, null=True, related_name='list_of_undertrial_prisoners')
     remarks = models.CharField(max_length=1024, null=True)
-
+    history = AuditlogHistoryField()
     class Meta:
         constraints = [
             models.UniqueConstraint(
@@ -170,6 +180,7 @@ class ListOfUndertrialPrisoners(models.Model):
                 name='unique_under_trial_prisoner_case_org_year_month'
             )
         ]
+auditlog.register(ListOfUndertrialPrisoners)
 
 class PendingCasesPartiesAboveSixty(models.Model):
     date_of_inst = models.DateField(null=True)
@@ -185,6 +196,7 @@ class PendingCasesPartiesAboveSixty(models.Model):
     organization= models.ForeignKey(auth_models.Organization, on_delete= models.SET_NULL, null=True, related_name='pending_caseses_parties_above_sixties')
     created_by = models.ForeignKey('auth.User', related_name='pending_caseses_parties_above_sixties_creator', on_delete=models.CASCADE)
     updated_by = models.ForeignKey('auth.User', related_name='pending_caseses_parties_above_sixties_updator', null=True, on_delete=models.SET_NULL) 
+    history = AuditlogHistoryField()
 
     class Meta:
         constraints = [
@@ -193,6 +205,7 @@ class PendingCasesPartiesAboveSixty(models.Model):
                 name='unique_pending_above_sixty_case_org_year_month'
             )
         ]
+auditlog.register(PendingCasesPartiesAboveSixty)
 
 class ExParteInjunctionCasesReport(models.Model):
     date_of_inst = models.DateField(null=True)
@@ -210,6 +223,7 @@ class ExParteInjunctionCasesReport(models.Model):
     organization= models.ForeignKey(auth_models.Organization, on_delete= models.SET_NULL, null=True, related_name='expaarte_injunction_reports')
     created_by = models.ForeignKey('auth.User', related_name='expaarte_injunction_creator', on_delete=models.CASCADE)
     updated_by = models.ForeignKey('auth.User', related_name='expaarte_injunction_updator', null=True, on_delete=models.SET_NULL)
+    history = AuditlogHistoryField()
 
     class Meta:
         constraints = [
@@ -218,6 +232,7 @@ class ExParteInjunctionCasesReport(models.Model):
                 name='unique_exparte_case_org_year_month'
             )
         ]
+auditlog.register(ExParteInjunctionCasesReport)
 
 class LongPendingCasesReport(models.Model):
     date_of_inst = models.DateField(null=True)
@@ -235,6 +250,7 @@ class LongPendingCasesReport(models.Model):
     organization= models.ForeignKey(auth_models.Organization, on_delete= models.SET_NULL, null=True, related_name='long_pending_caseses_reports')
     created_by = models.ForeignKey('auth.User', related_name='long_pending_caseses_reports_creator', on_delete=models.CASCADE)
     updated_by = models.ForeignKey('auth.User', related_name='long_pending_caseses_reports_updator', null=True, on_delete=models.SET_NULL)
+    history = AuditlogHistoryField()
 
     class Meta:
         constraints = [
@@ -243,7 +259,7 @@ class LongPendingCasesReport(models.Model):
                 name='unique_long_pending_case_org_year_month'
             )
         ]
-auditlog.register(Report)
+auditlog.register(LongPendingCasesReport)
 
 
 

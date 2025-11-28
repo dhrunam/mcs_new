@@ -130,6 +130,7 @@ class ListCreateReportAPIView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         queryset = report_models.Report.objects.all()
+        print("Just queried..:", queryset)
         print('I am called..')
         is_draft = self.request.query_params.get('is_draft')
         report_month = self.request.query_params.get('report_month')
@@ -158,6 +159,8 @@ class ListCreateReportAPIView(generics.ListCreateAPIView):
         
         if organization:
             queryset=queryset.filter(organization = organization)
+
+        print("Before.. return:", queryset)
 
         return queryset
     
@@ -210,12 +213,16 @@ class ListCreateReportAPIView(generics.ListCreateAPIView):
     
     def get_casetype_query(self, request, *args, **kwargs):
         queryset = report_models.CaseType.objects.all()
+        print('Just after call..:', queryset)
         type_civil_criminal = self.request.query_params.get('civil_criminal')
+        print('Type Civil Criminal..', type_civil_criminal)
         user_profile = self.request.user.user_profile
+        print('User Profile..', user_profile)
         org_type_short_name= user_profile.organization.organization_type.org_type_short_name
 
         if type_civil_criminal:
               queryset = queryset.filter(type_civil_criminal=type_civil_criminal)
+              print('After type civil criminal call..:', queryset)
 
         if org_type_short_name:
             if org_type_short_name=='hcs':
@@ -225,6 +232,8 @@ class ListCreateReportAPIView(generics.ListCreateAPIView):
                 # return queryset
             filter_kwargs = {org_type_short_name: True}
             queryset = queryset.filter(**filter_kwargs)
+
+        print('Before after call..:', queryset)
 
         return queryset
     

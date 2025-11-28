@@ -47,33 +47,33 @@ class RegisterView(generics.CreateAPIView):
 
 class UserList(generics.ListAPIView):
     queryset = User.objects.prefetch_related('groups')
-    serializer_class = UserSerializer
+    serializer_class = auth_serializers.LeanUserSerializer
 
 
     def get_queryset(self):
         queryset = User.objects.all()
-        
-        # user_group= self.request.query_params.get('user_group')
-        # if user_group:
-        #      return queryset.filter(groups__name=user_group)
-        # else:
-        #     queryset = queryset.filter(id= self.request.user.id)
+        print('User', self.request.user)
+        user_group= self.request.query_params.get('user_group')
+        if user_group:
+             return queryset.filter(groups__name=user_group)
+        else:
+            queryset = queryset.filter(id= self.request.user.id)
 
         return queryset
     
 class UserSingle(generics.RetrieveAPIView):
     queryset = User.objects.prefetch_related('groups')
-    serializer_class = UserSerializer
-    # def get_queryset(self):
-    #     queryset = User.objects.all()
+    serializer_class = auth_serializers.LeanUserSerializer
+    def get_queryset(self):
+        queryset = User.objects.all()
         
-    #     # user_group= self.request.query_params.get('user_group')
-    #     # if user_group:
-    #     #      return queryset.filter(groups__name=user_group)
-    #     # else:
-    #     #     queryset = queryset.filter(id= self.request.user.id)
+        user_group= self.request.query_params.get('user_group')
+        if user_group:
+             return queryset.filter(groups__name=user_group)
+        else:
+            queryset = queryset.filter(id= self.request.user.id)
 
-    #     return queryset
+        return queryset
     
 class UserInfo(views.APIView):
 #    permission_classes = [IsAuthenticated]  # Ensures that the user is authenticated
@@ -81,11 +81,15 @@ class UserInfo(views.APIView):
     def get(self, request):
         # Retrieve the currently logged-in user
         user = request.user
-        
+        print("user:", user)
         # Serialize the user information
-        serializer = UserSerializer(user)
+        if user:
+            serializer = auth_serializers.LeanUserSerializer(user)
         
         # Return the user data
-        return response.Response(serializer.data, status=status.HTTP_200_OK)
+            return response.Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return response.Response("User not found", status=status.HTTP_200_OK)
+
     
 

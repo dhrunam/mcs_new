@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-^pzxc)6%s!i$loexy*ltoo(k9$=8&_ynv^0@!%vumbj^wm2g@&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -89,10 +89,11 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'mcs_db_new',
+        # 'NAME': 'monthly_statement',
         'USER': 'postgres',
         'PASSWORD': 'postgres',
-        'HOST': 'localhost',
-        'PORT': '5434', 
+        'HOST': '10.182.144.249',
+        'PORT': '5432', 
     }
 }
 
@@ -157,7 +158,7 @@ REST_FRAMEWORK = {
 REST_DURIN = {
         "DEFAULT_TOKEN_TTL": timedelta(minutes=10),
         "TOKEN_CHARACTER_LENGTH": 64,
-        "USER_SERIALIZER": 'accounts.serializers.UserSerializer',
+        "USER_SERIALIZER": 'accounts.serializers.LeanUserSerializer',
         "AUTH_HEADER_PREFIX": "Token",
         "EXPIRY_DATETIME_FORMAT": api_settings.DATETIME_FORMAT,
         "TOKEN_CACHE_TIMEOUT": 10,

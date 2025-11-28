@@ -42,3 +42,11 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields ='__all__'
+
+
+class LeanUserSerializer(serializers.ModelSerializer):
+    related_profile = UserProfileSerializer(source='user_profile', many=False, read_only =True)
+    groups = GroupSerializer(many=True)
+    class Meta:
+        model = User
+        fields =('username', 'first_name', 'last_name','related_profile','groups')

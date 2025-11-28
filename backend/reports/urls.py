@@ -6,15 +6,15 @@ from . import views
 
 urlpatterns = [
     path('summary/', views.ReportSummaryView.as_view(), name='get_summary_reports'),
-    path('', views.ListCreateReportAPIView.as_view(), name='get_post_reports'),
+    path('report/', views.ListCreateReportAPIView.as_view(), name='get_post_reports'),
     path('notesheet/', views.ReportNoteSheetApiView.as_view(), name='get_notesheet_reports'),
 
     path('with/case_type', views.ListCreateReportAPIView.as_view(), name='get_post_reports'),
     path('<int:pk>/', views.RetrieveUpdateDestroyReportAPIView.as_view(), name='get_delete_update_report'),
     path('audit-logs/',views.AuditLogListView.as_view(), name='audit-log-list'),
-    path('oldest_case/<int:pk>', views.OldestCaseDetails.as_view(), name='oldest_case'),
-    path('oldest_case/get', views.OldestCaseDetailsRetrieve.as_view(), name='oldest_case_retrieve'),
-    path('case_type/',views.CaseTypeList.as_view()),
+    path('report/oldest_case/<int:pk>', views.OldestCaseDetails.as_view(), name='oldest_case'),
+    path('report/oldest_case/get', views.OldestCaseDetailsRetrieve.as_view(), name='oldest_case_retrieve'),
+    path('report/case_type/',views.CaseTypeList.as_view()),
 
     path('report/disposed/cases/', views.DisposedCaseReportList.as_view() ),
     path('report/disposed/cases/get/for/hcs', views.DisposedCaseReportListGetForHCS.as_view() ),

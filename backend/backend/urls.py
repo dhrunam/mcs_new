@@ -22,6 +22,6 @@ from reports import urls as report_urls
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v2/', include(report_urls)),
-    path('api/v1/auth/', include(account_urls)),
+    path('api/v2/', include(account_urls)),
    
 ]
