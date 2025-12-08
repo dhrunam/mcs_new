@@ -11,4 +11,6 @@ from .list_of_under_trial_prisoner_view import *
 from .pending_cases_parties_above_sixty_view import *
 from .long_pending_cases_report_view import *   
 from .ex_parte_injunction_cases_report_view import *
+from .parties_under_vulnerable_group_cases_report_view import *   
+
 

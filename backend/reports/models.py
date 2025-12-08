@@ -268,6 +268,33 @@ class LongPendingCasesReport(models.Model):
                 name='unique_long_pending_case_org_year_month'
             )
         ]
+
+class PartiesUnderVulnerableGroupCasesReport(models.Model):
+    date_of_inst = models.DateField(null=True)
+    case_no =  models.CharField(max_length=50, null=True)
+    case_title = models.CharField(max_length=1024, null=True)
+    case_type = models.CharField(max_length=1024, null=True)
+    # case_type = models.ForeignKey(CaseType,null=True,on_delete=models.SET_NULL, related_name="pending_case")
+    civil_criminal = models.CharField(max_length=50, null=True)
+    brief_note = models.CharField(max_length=1024, null=True)
+    status = models.CharField(max_length=1024, null=True)
+    vulnerable_group=models.CharField(max_length=255, null=True)
+    report_year = models.IntegerField()
+    report_month=models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    organization= models.ForeignKey(auth_models.Organization, on_delete= models.SET_NULL, null=True, related_name='parties_under_vulnerable_group_reports')
+    created_by = models.ForeignKey('auth.User', related_name='parties_under_vulnerable_group_reports_creator', on_delete=models.CASCADE)
+    updated_by = models.ForeignKey('auth.User', related_name='parties_under_vulnerable_group_reports_updator', null=True, on_delete=models.SET_NULL)
+    history = AuditlogHistoryField()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['case_no', 'report_year', 'report_month', 'organization'],
+                name='unique_vulnerable_group_case_org_year_month'
+            )
+        ]
 auditlog.register(LongPendingCasesReport)
 
 

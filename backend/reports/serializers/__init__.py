@@ -9,4 +9,6 @@ from .list_of_undertrial_prisoners_serializers import *
 from .pending_cases_parties_above_sixty_serializers import *
 from .long_pending_cases_report import *
 from .ex_parte_injunction_cases_report_serializers import *
+from .parties_under_vulnerable_cases_report_serializers import *    
+
 
