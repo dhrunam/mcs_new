@@ -1,8 +1,7 @@
 from django.urls import path
 # from .views import AuditLogListView
 
-from . import views
-
+from reports import views
 
 urlpatterns = [
     path('summary/', views.ReportSummaryView.as_view(), name='get_summary_reports'),
@@ -18,24 +17,34 @@ urlpatterns = [
 
     path('report/disposed/cases/', views.DisposedCaseReportList.as_view() ),
     path('report/disposed/cases/get/for/hcs', views.DisposedCaseReportListGetForHCS.as_view() ),
+    path('report/disposed/cases/latest', views.LastUploadedDisposedCasesReportList.as_view() ),
 
     path('report/pending/cases/', views.PendingCasesReportList.as_view() ),
     path('report/pending/cases/get/for/hcs', views.PendingCasesReportListGetForHCS.as_view() ),
+    path('report/pending/cases/latest', views.LastUploadedPendingCasesReportList.as_view() ),
+    
 
     path('report/pending/cases/above/sixty/', views.PendingCasesPartiesAboveSixtyList.as_view() ),
     path('report/pending/cases/above/sixty/get/for/hcs', views.PendingCasesPartiesAboveSixtyListGetForHCS.as_view() ),
+    path('report/pending/cases/above/sixty/latest', views.LastUploadedPendingCasesPartiesAboveSixtyList.as_view() ),
+    
 
     path('report/court/fee/', views.SatementOfCourtFeeFineList.as_view() ),
     path('report/court/fee/get/for/hcs', views.StatementOfCourtFeesFinesListGetForHCS.as_view() ),
+    path('report/court/fee/latest', views.LastUploadedStatementOfCourtFeesFinesList.as_view() ),
 
     path('report/long/pending/cases/', views.LongPendingCasesReportList.as_view() ),
     path('report/long/pending/cases/get/for/hcs', views.LongPendingCasesReportListGetForHCS.as_view() ),
+    path('report/long/pending/cases/latest', views.LastUploadedLongPendingCasesReportList.as_view() ),
 
     path('report/under/trial/prisoners/', views.ListOfUndertrialPrisonersList.as_view() ),
     path('report/under/trial/prisoners/get/for/hcs', views.ListOfUndertrialPrisonersListGetForHCS.as_view() ),
-
+    path('report/under/trial/prisoners/latest', views.LastUploadedListOfUndertrialPrisonersList.as_view() ),
+   
     path('report/ex-parte/injunction/', views.ExParteInjunctionCasesReportList.as_view() ),
     path('report/ex-parte/injunction/get/for/hcs', views.ExParteInjunctionCasesReportListGetForHCS.as_view() ),
+    path('report/ex-parte/injunction/latest', views.LastUploadedExParteInjunctionCasesReportList.as_view() ),
+   
 
     path('cis/org/database', views.OrganizationDatabaseList.as_view() ),
     path('cis/org/database/<int:pk>', views.OrganizationDatabaseDetails.as_view() ),

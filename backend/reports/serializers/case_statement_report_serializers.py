@@ -109,7 +109,8 @@ class BlankReportSerializer(serializers.ModelSerializer):
         )
 
 class DisposedCasesReportSerializer(serializers.ModelSerializer):
-
+    # related_casetype=CaseTypeSeralizer(source='case_type',many=False, read_only=True)
+   
     class Meta:
         model = DisposedCasesReport
         fields = "__all__"

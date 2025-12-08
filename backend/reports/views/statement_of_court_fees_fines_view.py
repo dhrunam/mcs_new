@@ -10,26 +10,28 @@ class SatementOfCourtFeeFineList(generics.ListCreateAPIView):
     serializer_class = report_serializer.StatementOfCourtFeesFinesSerializer
 
     def create(self, request, *args, **kwargs):
-        file = request.FILES.get('file')
-
-        if not file:
-            return response.Response({"error": "CSV file is required."}, status=status.HTTP_400_BAD_REQUEST)
-
+       
         try:
+            file = request.FILES.get('file')
+
+            if not file:
+                return response.Response({"error": "CSV file is required."}, status=status.HTTP_400_BAD_REQUEST)
+
             file_data = file.read().decode('utf-8')
             csv_reader = csv.DictReader(StringIO(file_data))
-            
+            profile = getattr(self.request.user, "user_profile", None)
+            model =report_models.StatementOfCourtFeesFines
             records = []
             for row in csv_reader:
                 row['report_year'] = self.request.data.get('report_year')
                 row['report_month'] = self.request.data.get('report_month')
-                row['organization']=self.request.data.get('organization')
+                row['organization']= profile.organization_id if profile and profile.organization_id else None
                 row['created_by'] = request.user.id  # Add user ID
 
                 # row['created_at'] = timezone.now()  # Add current timestamp
                 serializer = self.get_serializer(data=row)
                 serializer.is_valid(raise_exception=True)
-                records.append(Record(**serializer.validated_data))
+                records.append(model(**serializer.validated_data))
             
             report_models.StatementOfCourtFeesFines.objects.bulk_create(records)
             return response.Response({"message": f"{len(records)} records successfully added."}, status=status.HTTP_201_CREATED)
@@ -84,4 +86,19 @@ class StatementOfCourtFeesFinesListGetForHCS(generics.ListAPIView):
             queryset =queryset.filter( organization_id=org_id)  
         
         return queryset
+    
+
+class LastUploadedStatementOfCourtFeesFinesList(generics.ListAPIView):
+    queryset = report_models.StatementOfCourtFeesFines.objects.all().order_by('-id')
+    serializer_class = report_serializer.StatementOfCourtFeesFinesSerializer
+
+    def get_queryset(self):
+        from django.db.models import Max
+
+        profile = getattr(self.request.user, "user_profile", None)
+        org_id = profile.organization_id if profile and profile.organization_id else None
+    
+        latest_time = self.queryset.aggregate(Max('created_at'))['created_at__max']
+        self.queryset = self.queryset.filter(organization_id=org_id, created_at=latest_time)
+        return self.queryset     
     

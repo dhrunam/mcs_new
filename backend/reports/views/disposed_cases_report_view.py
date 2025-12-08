@@ -10,28 +10,34 @@ class DisposedCaseReportList(generics.ListCreateAPIView):
     serializer_class = report_serializer.DisposedCasesReportSerializer
 
     def create(self, request, *args, **kwargs):
-        file = request.FILES.get('file')
-
-        if not file:
-            return response.Response({"error": "CSV file is required."}, status=status.HTTP_400_BAD_REQUEST)
-
+      
         try:
+            print('Create called...')
+            file = request.FILES['file']
+
+            if not file:
+                return response.Response({"error": "CSV file is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+            print('Before CSV file read...')
             file_data = file.read().decode('utf-8')
+            print('CSV file read...')
             csv_reader = csv.DictReader(StringIO(file_data))
-            
+            profile = getattr(self.request.user, "user_profile", None)
+            model =report_models.DisposedCasesReport
             records = []
             for row in csv_reader:
+                print('inside for loop...')
                 row['report_year'] = self.request.data.get('report_year')
                 row['report_month'] = self.request.data.get('report_month')
                 row['civil_criminal'] = self.request.data.get('civil_criminal')
-                row['disposed_transfered'] = self.request.data.get('disposed_transfered')
-                row['organization']=self.request.data.get('organization')
+                # row['disposed_transfered'] = self.request.data.get('disposed_transfered')
+                row['organization']=profile.organization_id if profile and profile.organization_id else None
                 row['created_by'] = request.user.id  # Add user ID
 
                 # row['created_at'] = timezone.now()  # Add current timestamp
                 serializer = self.get_serializer(data=row)
                 serializer.is_valid(raise_exception=True)
-                records.append(Record(**serializer.validated_data))
+                records.append(model(**serializer.validated_data))
             
             report_models.DisposedCasesReport.objects.bulk_create(records)
             return response.Response({"message": f"{len(records)} records successfully added."}, status=status.HTTP_201_CREATED)
@@ -86,4 +92,22 @@ class DisposedCaseReportListGetForHCS(generics.ListAPIView):
             queryset =queryset.filter( organization_id=org_id)  
         
         return queryset
+
+class LastUploadedDisposedCasesReportList(generics.ListAPIView):
+
+    queryset = report_models.DisposedCasesReport.objects.all().order_by('-id')
+    serializer_class = report_serializer.DisposedCasesReportSerializer
+
+    def get_queryset(self):
+        from django.db.models import Max
+        
+        profile = getattr(self.request.user, "user_profile", None)
+        org_id = profile.organization_id if profile and profile.organization_id else None
+    
+        latest_time = self.queryset.aggregate(Max('created_at'))['created_at__max']
+        # self.queryset = self.queryset.filter(organization_id=org_id, created_at=latest_time)
+        self.queryset = self.queryset.filter( created_at=latest_time)
+       
+        return self.queryset    
+
     
