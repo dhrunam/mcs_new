@@ -12,5 +12,11 @@ class OrganizationList(generics.ListAPIView):
     queryset = auth_models.Organization.objects.all()
     serializer_class = auth_serializers.OrganizationSerializer
     pagination_class = None
+
+class OrganizationDetailView(generics.RetrieveAPIView):
+
+    queryset = auth_models.Organization.objects.all()
+    serializer_class = auth_serializers.OrganizationSerializer
+    lookup_field = 'id'
     
     

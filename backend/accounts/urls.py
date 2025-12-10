@@ -1,5 +1,5 @@
 from django.urls import path, include
-from accounts.views import RegisterView, UserList, OrganizationList, UserSingle, UserInfo
+from accounts.views import RegisterView, UserList, OrganizationList, UserSingle, UserInfo, OrganizationDetailView
 # from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
@@ -11,5 +11,6 @@ urlpatterns = [
     path('user/<int:pk>', UserSingle.as_view(), name='users_single'),
     path('user_info', UserInfo.as_view(), name='users_single'),
     path('organization/', OrganizationList.as_view(), name='organization'),
+    path('organization/<int:id>', OrganizationDetailView.as_view(), name='organization_detail'),
     path('auth/', include('durin.urls')),
 ]

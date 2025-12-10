@@ -105,8 +105,8 @@ class LastUploadedDisposedCasesReportList(generics.ListAPIView):
         org_id = profile.organization_id if profile and profile.organization_id else None
     
         latest_time = self.queryset.aggregate(Max('created_at'))['created_at__max']
-        # self.queryset = self.queryset.filter(organization_id=org_id, created_at=latest_time)
-        self.queryset = self.queryset.filter( created_at=latest_time)
+        self.queryset = self.queryset.filter(organization_id=org_id, created_at=latest_time)
+        # self.queryset = self.queryset.filter( created_at=latest_time)
        
         return self.queryset    
 

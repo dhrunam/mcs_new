@@ -31,7 +31,7 @@ class ListCreateReportAPIView(generics.ListCreateAPIView):
     #     serializer = self.get_serializer(data=self.request.data, many=True)
     #     if serializer.is_valid():
     #         serializer.save(creator=self.request.user)
-    @transaction.atomic()
+    @transaction.atomic
     def post(self, request, *args, **kwargs):
         try:
         
@@ -158,7 +158,7 @@ class ListCreateReportAPIView(generics.ListCreateAPIView):
              queryset=queryset.filter(created_by=self.request.user.id)
         
         if organization:
-            queryset=queryset.filter(organization = organization)
+            queryset=queryset.filter(organization_id = organization)
 
         print("Before.. return:", queryset)
 
@@ -185,55 +185,59 @@ class ListCreateReportAPIView(generics.ListCreateAPIView):
         type_civil_criminal = self.request.query_params.get('civil_criminal')
         organization =  self.request.query_params.get('organization')
 
+        
         if type_civil_criminal:
-            print('civil_criminal',type_civil_criminal)
+         
             report_subquery=report_subquery.filter(case_type__type_civil_criminal=type_civil_criminal)
-            
-
+          
         if is_draft:
             report_subquery=report_subquery.filter(is_draft=is_draft)
+           
 
         if report_month:
             report_subquery=report_subquery.filter(report_month=report_month)
+            
         
         if report_year:
             report_subquery=report_subquery.filter(report_year=report_year)
+          
 
-        if creator__username:
-            print('User Id',creator__username )
-            report_subquery=report_subquery.filter(created_by=creator__username)
+       
+        if organization:
+            report_subquery=report_subquery.filter(organization = organization)
         else:
              report_subquery=report_subquery.filter(created_by=self.request.user.id)
         
-        if organization:
-            report_subquery=report_subquery.filter(organization = organization)
-
-        print('report_subquery:', report_subquery)
         return report_subquery
     
     def get_casetype_query(self, request, *args, **kwargs):
         queryset = report_models.CaseType.objects.all()
-        print('Just after call..:', queryset)
+       
         type_civil_criminal = self.request.query_params.get('civil_criminal')
-        print('Type Civil Criminal..', type_civil_criminal)
+       
         user_profile = self.request.user.user_profile
-        print('User Profile..', user_profile)
+       
         org_type_short_name= user_profile.organization.organization_type.org_type_short_name
 
         if type_civil_criminal:
               queryset = queryset.filter(type_civil_criminal=type_civil_criminal)
-              print('After type civil criminal call..:', queryset)
+           
 
         if org_type_short_name:
             if org_type_short_name=='hcs':
-                creator__username =  self.request.query_params.get('creator__username')
-                org_type_short_name = auth_models.UserProfile.objects.filter(user=creator__username).last().organization.organization_type.org_type_short_name
+                org_id = self.request.query_params.get('organization')
+                # creator__username =  self.request.query_params.get('creator__username')
+                # org_type_short_name = auth_models.UserProfile.objects.filter(user=creator__username).last().organization.organization_type.org_type_short_name
+                # creator__username =  self.request.query_params.get('creator__username')
+                org_type_short_name = auth_models.Organization.objects.get(id=org_id).organization_type.org_type_short_name
+               
+                
                 # print('Case Type:', queryset)
                 # return queryset
             filter_kwargs = {org_type_short_name: True}
             queryset = queryset.filter(**filter_kwargs)
 
-        print('Before after call..:', queryset)
+       
 
         return queryset
     
@@ -297,7 +301,7 @@ class ListCreateReportAPIView(generics.ListCreateAPIView):
             # desc_case=F('desc_case')
         )
 
-        print('Last Result', queryset)
+      
         # Serialize the queryset
         # serializer = self.get_serializer(queryset, many=True)
         serializer =report_serializer.BlankReportSerializer(queryset, many=True)
