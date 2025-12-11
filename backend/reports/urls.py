@@ -46,7 +46,7 @@ urlpatterns = [
     path('report/ex-parte/injunction/latest', views.LastUploadedExParteInjunctionCasesReportList.as_view() ),
    
     path('report/vulnerable/group/', views.PartiesUnderVulnerableGroupCasesReportList.as_view() ),
-    path('report/vulnerable/group//get/for/hcs', views.PartiesUnderVulnerableGroupCasesReportListGetForHCS.as_view() ),
+    path('report/vulnerable/group/get/for/hcs', views.PartiesUnderVulnerableGroupCasesReportListGetForHCS.as_view() ),
     path('report/vulnerable/group//latest', views.LastUploadedPartiesUnderVulnerableGroupCasesReportList.as_view() ),
    
     path('cis/org/database', views.OrganizationDatabaseList.as_view() ),
