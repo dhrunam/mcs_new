@@ -19,7 +19,7 @@ class OrganizationDatabase(models.Model):
 auditlog.register(OrganizationDatabase)
 
 class CaseType(models.Model):
-    organisation= models.ForeignKey(auth_models.Organization, null=True, on_delete=models.SET_NULL, related_name='organisation_casetype') # Organization ID
+    # organisation= models.ForeignKey(auth_models.Organization, null=True, on_delete=models.SET_NULL, related_name='organisation_casetype') # Organization ID
     desc_case = models.CharField(max_length=600)
     type_main_mis = models.CharField(max_length=15, null=True)
     type_civil_criminal = models.CharField(max_length=15, null=True)

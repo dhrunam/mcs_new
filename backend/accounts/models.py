@@ -28,3 +28,6 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, null=False, on_delete=models.CASCADE, related_name='user_profile')
     organization = models.ForeignKey(Organization, null= True, on_delete=models.SET_NULL, related_name='user_profile')
 
+    def __str__(self):
+        return f"{self.user.username} - ({self.organization.organization_name})"
+

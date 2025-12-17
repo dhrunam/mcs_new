@@ -13,7 +13,9 @@ urlpatterns = [
     path('audit-logs/',views.AuditLogListView.as_view(), name='audit-log-list'),
     path('report/oldest_case/<int:pk>', views.OldestCaseDetails.as_view(), name='oldest_case'),
     path('report/oldest_case/get', views.OldestCaseDetailsRetrieve.as_view(), name='oldest_case_retrieve'),
+    
     path('report/case_type/',views.CaseTypeList.as_view()),
+    path('report/case_type/all/',views.CaseTypeListAll.as_view()),
 
     path('report/disposed/cases/', views.DisposedCaseReportList.as_view() ),
     path('report/disposed/cases/get/for/hcs', views.DisposedCaseReportListGetForHCS.as_view() ),
